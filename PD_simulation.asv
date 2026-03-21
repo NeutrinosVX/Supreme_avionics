@@ -1,0 +1,64 @@
+% Rocket Orientation Control Simulation
+tspan = [0 10]; % Simulate for 10 seconds
+y0 = [1; 0; 0];    % Initial state: [1 radian off-target, 0 angular velocity]
+% 2. PID Controller 
+kp_pro = 10;
+kd_pro = 5;  
+ki=4;
+[t2, sol2] = ode45(@(t, y) rocket_dynamics(t, y, kp_pro, kd_pro,ki), tspan, y0);
+% Plotting the Results
+figure;
+plot(t2, sol2(:,1), 'b', 'LineWidth', 2);
+grid on;
+title('Rocket Orientation: P-only vs PD Control');
+xlabel('Time (s)');
+ylabel('Angle Error (rad)');
+legend('PD (Stabilized)');
+%DL simulation:
+function dSdt = gestalt_system(t, S, N)
+    % 1. Unpack States
+    theta = S(1); omega = S(2); integral = S(3);
+    W = S(4 : 4+N-1);
+    
+    % 2. Hidden Layer Activation (Radial Basis)
+    centers = linspace(-1, 1, N)';
+    phi = exp(-(theta - centers).^2 / (2 * 0.5^2));
+    
+    % 3. Control Law (PID + Neural)
+    u_pid = -10*theta - 5*omega - 4*integral;
+    u_nn = W' * phi; % The "Hidden" contribution
+    u_total = u_pid + u_nn;
+    
+    % 4. The "Poisoned" Physics (The disturbance the PID doesn't expect)
+    % Let's simulate a constant "Fin Warp" offset of 5.0 units
+    disturbance = 5.0; 
+    alpha = u_total + disturbance;
+    
+    % 5. Weight Adaptation Law (The "Learning" ODE)
+    % We update weights to minimize the Lyapunov-derived error
+    learning_rate = 2.0;
+    dW = learning_rate * (theta + 0.5*omega) * phi; 
+    
+    % 6. Pack it back up for ode45
+    dSdt = [omega; alpha; theta; dW];
+end
+
+
+
+
+
+
+
+
+% --- Physics Function ---
+% function dydt = rocket_dynamics(t, y, kp, kd,ki)
+%     theta = y(1);       % Current Angle
+%     omega = y(2);       % Current Angular Velocity
+%     total =y(3);
+%     % The Control Law: u = -Kp*error - Kd*derivative
+%     u = -kp*theta - kd*omega-ki*total; 
+% 
+%     % Physics: alpha = acceleration. Simplified: I*alpha = u
+%     % We assume Moment of Inertia I = 1 for simplicity
+%     dydt = [omega; u; theta]; 
+% end

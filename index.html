@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>STAR Ground Station</title>
+    <style>
+        /* Reset the page so the 3D scene takes up the whole monitor */
+        body { margin: 0; overflow: hidden; background-color: #0a0a0a; font-family: monospace; }
+        
+        /* The 3D Canvas goes in the back */
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
+        
+        /* The Stats Window (Styled exactly like your screenshot!) */
+        #stats-window {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 10; /* This forces it to sit ON TOP of the 3D rocket */
+            background: #1e1e1e;
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            width: 320px;
+            color: #00ff00; /* Terminal green */
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.5);
+        }
+        #stats-window h1 { color: #ffffff; margin-top: 0; font-size: 1.5em; }
+        #stats-window p { font-size: 1.1em; margin: 12px 0; }
+        #stats-window span { color: #ffffff; font-weight: bold; float: right; }
+    </style>
+</head>
+<body>
+
+    <div id="stats-window">
+        <h1>🚀 STAR Telemetry</h1>
+        <p>Altitude: <span id="alt">--</span></p>
+        <p>Velocity: <span id="vel">--</span></p>
+        <p>Acceleration: <span id="accel">--</span></p>
+        <p>Pitch: <span id="pitch">--</span></p>
+        <p>Yaw: <span id="yaw">--</span></p>
+        <p>Roll: <span id="roll">--</span></p>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // ==========================================
+        // SETUP THREE.JS SCENE
+        // ==========================================
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 12; // Move camera back
+        camera.position.y = 2;  
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 20, 10);
+        scene.add(directionalLight);
+
+        // ==========================================
+        // BUILD THE 3D ROCKET
+        // ==========================================
+        const rocketGroup = new THREE.Group();
+
+        const bodyGeo = new THREE.CylinderGeometry(1, 1, 6, 32);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        
+        const noseGeo = new THREE.ConeGeometry(1, 2, 32);
+        const noseMat = new THREE.MeshStandardMaterial({ color: 0xcc0000 }); 
+        const nose = new THREE.Mesh(noseGeo, noseMat);
+        nose.position.y = 4; 
+
+        rocketGroup.add(body);
+        rocketGroup.add(nose);
+        scene.add(rocketGroup);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // ==========================================
+        // HANDLE INCOMING WEBSOCKET DATA
+        // ==========================================
+        const socket = io(); 
+
+        socket.on('telemetry_update', (data) => {
+            // Update the HUD text
+            document.getElementById('alt').innerText = data.altitude;
+            document.getElementById('vel').innerText = data.velocity;
+            document.getElementById('accel').innerText = data.acceleration;
+            document.getElementById('pitch').innerText = data.pitch;
+            document.getElementById('yaw').innerText = data.yaw;
+            document.getElementById('roll').innerText = data.roll;
+
+            // Update 3D Rocket Rotation (Convert text degrees to raw radians)
+            const degToRad = Math.PI / 180;
+            rocketGroup.rotation.x = parseFloat(data.pitch) * degToRad;
+            rocketGroup.rotation.y = parseFloat(data.yaw) * degToRad;
+            rocketGroup.rotation.z = parseFloat(data.roll) * degToRad;
+        });
+
+        // Make sure the 3D canvas resizes if you resize your browser window!
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>

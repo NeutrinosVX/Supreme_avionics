@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../../Documents/avionics/DiabloAvionics/DAQv1_FA25/src"
+		},
+		{
+			"name": "ESP32 Test_board",
+			"path": "../../../Documents/PlatformIO/Projects/0.3M avionics/ESP32 Test_board"
+		},
+		{
+			"name": "Practice Board",
+			"path": "../../../Documents/PlatformIO/Projects/Practice Board"
+		}
+	],
+	"settings": {}
+}
