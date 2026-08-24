@@ -85,6 +85,15 @@ node server.js     # 启动地面站，浏览器打开 http://localhost:3000
 
 ---
 
+## 🧰 工程标准（GitHub 行业实践）
+
+- `.gitignore` — 排除 `node_modules/`、飞行日志 `*.csv`、MATLAB 自动保存 `*.asv`、系统/编辑器文件
+- `.gitattributes` — 统一 LF 行尾，`.ork` 等二进制文件标记
+- `.editorconfig` — 全项目统一缩进/编码（JS/HTML 2 空格，MATLAB 4 空格）
+- `.github/workflows/ci.yml` — 推送到 main/master 自动跑：装依赖 + 语法检查 + 依赖安全审计
+- `LICENSE` — MIT 协议
+- `package.json` — 修正入口 `main: server.js`，新增 `npm start` / `npm run check` 脚本
+
 ## 📌 待办 / 建议（未改动，仅记录）
 
 - [ ] **02_Design/PCB design** 目前为空——补上航电电路板设计（MPU6050 + 电源 + 串口）

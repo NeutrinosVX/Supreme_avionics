@@ -1,0 +1,25 @@
+# ---- Node.js ----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json.tmp
+
+# ---- 运行时数据（飞行日志不入库） ----
+03_GroundStation/flight_data.csv
+*.csv
+
+# ---- MATLAB 自动保存 ----
+*.asv
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
+
+# ---- 日志 ----
+*.log
+logs/

@@ -1,15 +1,26 @@
 {
-  "name": "0.3m_avionics",
+  "name": "0.3m-avionics-ground-station",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "0.3M 探空火箭地面站：串口遥测接收 + 3D 实时姿态显示 + 飞行数据记录 (Node.js + Socket.IO + Three.js)",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "check": "node --check server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "sounding-rocket",
+    "avionics",
+    "telemetry",
+    "ground-station",
+    "socket.io",
+    "three.js"
+  ],
+  "author": "opus zvi",
+  "license": "MIT",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "express": "^5.2.1",
     "serialport": "^13.0.0",

@@ -1,0 +1,21 @@
+# 统一行尾为 LF，文本文件按 UTF-8 处理
+* text=auto eol=lf
+
+# 二进制文件（OpenRocket 设计文件本质是 zip）
+*.ork binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+
+# 文本文件显式声明
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.m text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.txt text eol=lf
